@@ -172,7 +172,7 @@ defmodule PlanningPokerWeb.PokerLive do
         end
 
       false ->
-        {:noreply, assign(socket, :voting_form, to_form(changeset))}
+        {:noreply, assign(socket, :voting_form, to_form(Map.put(changeset, :action, :insert)))}
     end
   end
 

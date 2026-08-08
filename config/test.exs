@@ -46,4 +46,4 @@ config :planning_poker, :bypass_token_validation, true
 config :sentry,
   dsn: nil,
   environment_name: :test,
-  client: RateCalculator.SentryReqClient
+  client: PlanningPoker.SentryReqClient

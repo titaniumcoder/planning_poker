@@ -5,13 +5,25 @@ defmodule PlanningPoker.MixProject do
     [
       app: :planning_poker,
       version: "0.1.0",
-      elixir: "~> 1.15",
+      elixir: "~> 1.18",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
       compilers: [:phoenix_live_view] ++ Mix.compilers(),
-      listeners: [Phoenix.CodeReloader]
+      listeners: [Phoenix.CodeReloader],
+      test_coverage: [
+        ignore_modules: [
+          # Release tasks only run in production releases, without Mix
+          PlanningPoker.Release,
+          # Compile-time macro module, not executable at test runtime
+          PlanningPokerWeb,
+          # Template modules whose functions live in external .heex files,
+          # which cover cannot attribute to the module
+          PlanningPokerWeb.ErrorHTML,
+          PlanningPokerWeb.PokerHTML
+        ]
+      ]
     ]
   end
 
@@ -41,16 +53,16 @@ defmodule PlanningPoker.MixProject do
   defp deps do
     [
       {:phoenix, "~> 1.8.1"},
-      {:phoenix_ecto, "~> 4.5"},
-      {:ecto_sql, "~> 3.13"},
+      {:phoenix_ecto, "~> 4.6"},
+      {:ecto_sql, "~> 3.14"},
       {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 4.1"},
-      {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 1.1.0"},
+      {:phoenix_html, "~> 4.2"},
+      {:phoenix_live_reload, "~> 1.6", only: :dev},
+      {:phoenix_live_view, "~> 1.2.0"},
       {:lazy_html, ">= 0.1.0", only: :test},
       {:phoenix_live_dashboard, "~> 0.8.3"},
       {:esbuild, "~> 0.10", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.3", runtime: Mix.env() == :dev},
+      {:tailwind, "~> 0.5", runtime: Mix.env() == :dev},
       {:heroicons,
        github: "tailwindlabs/heroicons",
        tag: "v2.2.0",
@@ -58,17 +70,17 @@ defmodule PlanningPoker.MixProject do
        app: false,
        compile: false,
        depth: 1},
-      {:swoosh, "~> 1.16"},
-      {:req, "~> 0.5"},
+      {:swoosh, "~> 1.19"},
+      {:req, "~> 0.7"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
-      {:gettext, "~> 0.26"},
-      {:jason, "~> 1.2"},
+      {:gettext, "~> 1.0"},
+      {:jason, "~> 1.4"},
       {:dns_cluster, "~> 0.2.0"},
-      {:bandit, "~> 1.5"},
-      {:tidewave, "~> 0.4", only: :dev},
+      {:bandit, "~> 1.8"},
+      {:tidewave, "~> 0.8", only: :dev},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:sentry, "~> 11.0.3"}
+      {:sentry, "~> 13.4"}
     ]
   end
 

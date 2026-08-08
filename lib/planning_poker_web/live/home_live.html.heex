@@ -4,9 +4,11 @@
       <div class="max-w-2xl">
         <div class="mb-8">
           <div class="badge badge-primary badge-lg mb-4">Phoenix LiveView Demo</div>
+
           <h1 class="text-5xl font-bold text-primary mb-4">
             Planning Poker
           </h1>
+
           <p class="text-lg text-base-content/80 mb-8">
             A collaborative estimation tool for agile teams built with Phoenix LiveView.
           </p>
@@ -18,9 +20,11 @@
               <h2 class="card-title text-success justify-center">
                 <.icon name="hero-plus-circle" class="w-6 h-6" /> Start a New Session
               </h2>
+
               <p class="text-base-content/70 mb-4">
                 Create a new planning poker session and invite your team.
               </p>
+
               <.link navigate={~p"/poker"} class="btn btn-success btn-lg">
                 <.icon name="hero-sparkles" class="w-5 h-5" /> Create Planning Poker
               </.link>
@@ -34,6 +38,7 @@
               <h2 class="card-title text-info justify-center">
                 <.icon name="hero-link" class="w-6 h-6" /> Join Existing Session
               </h2>
+
               <p class="text-base-content/70 mb-4">
                 Ask your moderator to share the session URL with you.
               </p>

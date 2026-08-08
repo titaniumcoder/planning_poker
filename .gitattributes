@@ -1,0 +1,4 @@
+# Normalize line endings to LF on checkin and checkout, so that
+# tooling (credo, mix format) sees consistent line endings on all
+# platforms, including Windows with core.autocrlf enabled.
+* text=auto eol=lf

@@ -56,7 +56,7 @@ defmodule PlanningPoker.Voting.VotingSupervisor do
     DynamicSupervisor.which_children(__MODULE__)
     |> Enum.map(fn {_id, pid, _type, _modules} ->
       case GenServer.call(pid, :get_voting_state) do
-        {:ok, state} -> {state.poker.id, pid}
+        {:ok, state} -> {state.poker_id, pid}
         _ -> nil
       end
     end)

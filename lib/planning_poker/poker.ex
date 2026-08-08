@@ -293,7 +293,7 @@ defmodule PlanningPoker.Poker do
   def start_voting_for_voting(%Poker{} = poker, %Voting{} = voting) do
     participants = get_unmuted_online_users(poker.id)
 
-    if length(participants) > 0 do
+    if participants != [] do
       case VotingServer.start_voting_session(poker.id, participants) do
         {:ok, _state} ->
           broadcast_voting_update(poker.id, {:voting_session_started, voting.id})

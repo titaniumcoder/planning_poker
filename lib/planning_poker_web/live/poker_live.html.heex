@@ -7,6 +7,7 @@
       <div class="flex-1 md:flex-1">
         <div class="mb-8 flex items-center justify-between">
           <h1 class="text-4xl font-bold text-base-content">{@poker.name}</h1>
+
           <div class="flex items-center gap-2">
             <span class="text-sm font-medium text-base-content">Share:</span>
             <input
@@ -26,7 +27,6 @@
             </button>
           </div>
         </div>
-
         <%!-- Votings List --%>
         <div :if={length(@poker.votings) > 0} class="space-y-4">
           <div class="space-y-3">
@@ -35,6 +35,7 @@
                 <div class="card-body p-0">
                   <div class="flex items-center gap-3 mb-4">
                     <h3 class="text-xl font-medium">{voting.title}</h3>
+
                     <div :if={voting.link} class="flex-shrink-0">
                       <a
                         href={voting.link}
@@ -67,7 +68,6 @@
 
                         should_show_collapse_button =
                           show_all_rounds && round_count >= 1 %>
-
                         <%!-- Show rounds toggle button if: more than 1 round, OR single round with decision --%>
                         <%= if should_show_expand_button do %>
                           <div class="text-center mb-4">
@@ -90,8 +90,7 @@
                           </div>
                         <% end %>
 
-                        <%!-- Show rounds based on conditions --%>
-                        <% rounds_to_show =
+                        <%!-- Show rounds based on conditions --%> <% rounds_to_show =
                           cond do
                             # If voting is active, hide previous rounds
                             is_voting_active ->
@@ -115,9 +114,9 @@
                               last_index = round_count - 1
                               [{last_round, last_index}]
                           end %>
-
                         <div :for={{vote_data, index} <- rounds_to_show}>
                           <div class="divider divider-neutral">ROUND #{index + 1}</div>
+
                           <div class="py-2">
                             <%!-- Poker cards for voting results --%>
                             <div class="grid grid-cols-3 sm:grid-cols-4 gap-3">
@@ -126,6 +125,7 @@
                                 class="poker-card-result"
                               >
                                 <div class="poker-card-name-small">{user}</div>
+
                                 <div class="poker-card-content-small">
                                   {vote}
                                 </div>
@@ -133,7 +133,6 @@
                             </div>
                           </div>
                         </div>
-
                         <%!-- Show collapse button if currently showing all rounds --%>
                         <%= if should_show_collapse_button do %>
                           <div class="text-center mt-4">
@@ -197,6 +196,7 @@
                                 <div class="text-sm text-base-content opacity-70">
                                   Time remaining:
                                 </div>
+
                                 <div
                                   class="text-2xl font-bold text-warning"
                                   id={"timer-display-#{voting.id}"}
@@ -218,6 +218,7 @@
                                 </div>
                               </div>
                             </div>
+
                             <div class="mt-6">
                               <button
                                 type="button"
@@ -242,6 +243,7 @@
                                 <div class="text-sm text-base-content opacity-70">
                                   Time remaining:
                                 </div>
+
                                 <div
                                   class="text-2xl font-bold text-warning"
                                   id={"timer-display-#{voting.id}"}
@@ -252,12 +254,14 @@
                             </div>
 
                             <h4 class="text-lg font-semibold mb-6">Voting in Progress</h4>
+
                             <div class="grid grid-cols-3 sm:grid-cols-4 gap-4 justify-center">
                               <div
                                 :for={participant <- @voting_participants || []}
                                 class="poker-card-progress"
                               >
                                 <div class="poker-card-name">{participant}</div>
+
                                 <div class="poker-card-content">
                                   <%= if Map.has_key?(@user_votes, participant) do %>
                                     <%= if participant == @user_name do %>
@@ -284,7 +288,6 @@
                           </div>
                         <% end %>
                       </div>
-
                       <%!-- Non-participant view --%>
                       <div :if={@user_name not in (@voting_participants || [])} class="mb-6">
                         <div class="alert alert-info">
@@ -293,7 +296,6 @@
                             Voting in progress. You are not participating (muted or joined after voting started).
                           </span>
                         </div>
-
                         <%!-- Show voting progress for non-participants --%>
                         <div class="text-center mt-6">
                           <%!-- Timer Hook --%>
@@ -307,6 +309,7 @@
                               <div class="text-sm text-base-content opacity-70">
                                 Time remaining:
                               </div>
+
                               <div
                                 class="text-2xl font-bold text-warning"
                                 id={"timer-display-#{voting.id}"}
@@ -317,12 +320,14 @@
                           </div>
 
                           <h4 class="text-lg font-semibold mb-6">Voting Progress</h4>
+
                           <div class="grid grid-cols-3 sm:grid-cols-4 gap-4 justify-center">
                             <div
                               :for={participant <- @voting_participants || []}
                               class="poker-card-progress"
                             >
                               <div class="poker-card-name">{participant}</div>
+
                               <div class="poker-card-content">
                                 <%= if Map.has_key?(@user_votes, participant) do %>
                                   <div class="poker-card-voted">✓</div>
@@ -368,13 +373,13 @@
                         </form>
                       </div>
                     </div>
-
                     <%!-- Decision display --%>
                     <div
                       :if={voting.decision}
                       class="mb-4 p-3 bg-success/10 border border-success/20 rounded-lg"
                     >
                       <div class="text-sm text-base-content/70 mb-1">Decision:</div>
+
                       <div class="text-base font-semibold text-base-content max-w-md truncate">
                         <%= if String.length(voting.decision) > 50 do %>
                           {String.slice(voting.decision, 0, 50)}...
@@ -382,7 +387,6 @@
                           {voting.decision}
                         <% end %>
                       </div>
-
                       <%!-- Remove Decision button for last voting --%>
                       <div :if={voting == List.last(@poker.votings)} class="mt-3">
                         <button
@@ -400,12 +404,12 @@
               </div>
             <% end %>
           </div>
-
           <%!-- Voting Form --%>
           <div :if={@show_voting_form} class="mt-6">
             <div class="bg-base-100 rounded-lg shadow-sm p-6 border border-base-300">
               <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-base-content">Create New Voting</h3>
+
                 <button
                   type="button"
                   class="btn btn-sm btn-ghost"
@@ -429,14 +433,12 @@
                     placeholder="User story or feature to estimate"
                     required
                   />
-
                   <.input
                     field={@voting_form[:link]}
                     type="text"
                     label="Link (optional)"
                     placeholder="https://..."
                   />
-
                   <div class="flex gap-2 justify-end">
                     <button
                       type="button"
@@ -445,6 +447,7 @@
                     >
                       Cancel
                     </button>
+
                     <button type="submit" class="btn btn-primary">
                       Save Voting
                     </button>
@@ -453,7 +456,6 @@
               </.form>
             </div>
           </div>
-
           <%!-- Add Voting Button --%>
           <div :if={!@show_voting_form} class="mt-6">
             <button
@@ -469,12 +471,12 @@
             </button>
           </div>
         </div>
-
         <%!-- Voting Form when no votings exist --%>
         <div :if={length(@poker.votings) == 0 && @show_voting_form} class="mb-6">
           <div class="bg-base-100 rounded-lg shadow-sm p-6 border border-base-300">
             <div class="flex items-center justify-between mb-4">
               <h3 class="text-lg font-semibold text-base-content">Create New Voting</h3>
+
               <button
                 type="button"
                 class="btn btn-sm btn-ghost"
@@ -498,14 +500,12 @@
                   placeholder="User story or feature to estimate"
                   required
                 />
-
                 <.input
                   field={@voting_form[:link]}
                   type="text"
                   label="Link (optional)"
                   placeholder="https://..."
                 />
-
                 <div class="flex gap-2 justify-end">
                   <button
                     type="button"
@@ -514,6 +514,7 @@
                   >
                     Cancel
                   </button>
+
                   <button type="submit" class="btn btn-primary">
                     Save Voting
                   </button>
@@ -522,7 +523,6 @@
             </.form>
           </div>
         </div>
-
         <%!-- Add Voting Button (when no votings exist) --%>
         <div :if={length(@poker.votings) == 0 && !@show_voting_form} class="mb-6">
           <button
@@ -544,8 +544,7 @@
             </span>
           </div>
         </div>
-        
-<!-- Action Buttons -->
+        <!-- Action Buttons -->
         <div :if={!PlanningPoker.Poker.closed?(@poker)} class="flex gap-2">
           <button
             type="button"
@@ -555,6 +554,7 @@
           >
             <.icon name="hero-no-symbol" class="w-4 h-4" /> Terminate
           </button>
+
           <button
             type="button"
             class="btn btn-outline flex-1 tooltip"
@@ -564,8 +564,7 @@
             <.icon name="hero-arrow-left-on-rectangle" class="w-4 h-4" /> Leave
           </button>
         </div>
-        
-<!-- Action buttons when session is closed -->
+        <!-- Action buttons when session is closed -->
         <div :if={PlanningPoker.Poker.closed?(@poker)} class="flex gap-2">
           <button
             type="button"
@@ -575,6 +574,7 @@
           >
             <.icon name="hero-play" class="w-4 h-4" /> Reopen
           </button>
+
           <button
             type="button"
             class="btn btn-error flex-1 tooltip"
@@ -584,12 +584,12 @@
             <.icon name="hero-trash" class="w-4 h-4" /> Delete
           </button>
         </div>
-        
-<!-- User List (only show when session is not closed) -->
+        <!-- User List (only show when session is not closed) -->
         <div :if={!PlanningPoker.Poker.closed?(@poker) && length(@online_users) > 0}>
           <h3 class="text-lg font-semibold text-base-content mb-3">
             Active Users ({length(@online_users)})
           </h3>
+
           <div class="card bg-base-200 p-4">
             <div class="space-y-2">
               <%= if @user_name do %>
@@ -602,10 +602,12 @@
                         if(current_user.muted, do: "bg-error", else: "bg-success")
                       ]}>
                       </div>
+
                       <span class="font-medium">
                         {current_user.username} (You)
                       </span>
                     </div>
+
                     <button
                       type="button"
                       class="btn btn-xs btn-ghost text-primary-content hover:bg-primary-focus tooltip"
@@ -633,6 +635,7 @@
                   if(user.muted, do: "bg-error", else: "bg-success")
                 ]}>
                 </div>
+
                 <span class="font-medium text-base-content">
                   {user.username}
                 </span>
@@ -644,9 +647,9 @@
                 class="flex items-center gap-2 px-3 py-2 opacity-60"
               >
                 <div class="w-2 h-2 rounded-full bg-base-content opacity-40"></div>
+
                 <span class="font-medium text-base-content line-through">
-                  {user.username}
-                  <span class="sr-only">(offline)</span>
+                  {user.username} <span class="sr-only">(offline)</span>
                 </span>
               </div>
             </div>

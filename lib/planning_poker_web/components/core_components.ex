@@ -69,6 +69,7 @@ defmodule PlanningPokerWeb.CoreComponents do
         <.icon :if={@kind == :error} name="hero-exclamation-circle" class="size-5 shrink-0" />
         <div>
           <p :if={@title} class="font-semibold">{@title}</p>
+
           <p>{msg}</p>
         </div>
         <div class="flex-1" />
@@ -97,7 +98,9 @@ defmodule PlanningPokerWeb.CoreComponents do
       <.button phx-click="go" variant="primary">Send!</.button>
       <.button navigate={~p"/"}>Home</.button>
   """
-  attr :rest, :global, include: ~w(href navigate patch method download name value disabled)
+  attr :rest, :global,
+    include: ~w(href navigate patch method download name value disabled type form formaction)
+
   attr :class, :string
   attr :variant, :string, values: ~w(primary)
   slot :inner_block, required: true
@@ -209,6 +212,7 @@ defmodule PlanningPokerWeb.CoreComponents do
           />{@label}
         </span>
       </label>
+
       <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
@@ -230,6 +234,7 @@ defmodule PlanningPokerWeb.CoreComponents do
           {Phoenix.HTML.Form.options_for_select(@options, @value)}
         </select>
       </label>
+
       <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
@@ -239,8 +244,7 @@ defmodule PlanningPokerWeb.CoreComponents do
     ~H"""
     <div class="fieldset mb-2">
       <label>
-        <span :if={@label} class="label mb-1">{@label}</span>
-        <textarea
+        <span :if={@label} class="label mb-1">{@label}</span> <textarea
           id={@id}
           name={@name}
           class={[
@@ -250,6 +254,7 @@ defmodule PlanningPokerWeb.CoreComponents do
           {@rest}
         >{Phoenix.HTML.Form.normalize_value("textarea", @value)}</textarea>
       </label>
+
       <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
@@ -273,6 +278,7 @@ defmodule PlanningPokerWeb.CoreComponents do
           {@rest}
         />
       </label>
+
       <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
@@ -282,8 +288,7 @@ defmodule PlanningPokerWeb.CoreComponents do
   defp error(assigns) do
     ~H"""
     <p class="mt-1.5 flex gap-2 items-center text-sm text-error">
-      <.icon name="hero-exclamation-circle" class="size-5" />
-      {render_slot(@inner_block)}
+      <.icon name="hero-exclamation-circle" class="size-5" /> {render_slot(@inner_block)}
     </p>
     """
   end
@@ -302,10 +307,12 @@ defmodule PlanningPokerWeb.CoreComponents do
         <h1 class="text-lg font-semibold leading-8">
           {render_slot(@inner_block)}
         </h1>
+
         <p :if={@subtitle != []} class="text-sm text-base-content/70">
           {render_slot(@subtitle)}
         </p>
       </div>
+
       <div class="flex-none">{render_slot(@actions)}</div>
     </header>
     """
@@ -347,11 +354,13 @@ defmodule PlanningPokerWeb.CoreComponents do
       <thead>
         <tr>
           <th :for={col <- @col}>{col[:label]}</th>
+
           <th :if={@action != []}>
             <span class="sr-only">{gettext("Actions")}</span>
           </th>
         </tr>
       </thead>
+
       <tbody id={@id} phx-update={is_struct(@rows, Phoenix.LiveView.LiveStream) && "stream"}>
         <tr :for={row <- @rows} id={@row_id && @row_id.(row)}>
           <td
@@ -361,6 +370,7 @@ defmodule PlanningPokerWeb.CoreComponents do
           >
             {render_slot(col, @row_item.(row))}
           </td>
+
           <td :if={@action != []} class="w-0 font-semibold">
             <div class="flex gap-4">
               <%= for action <- @action do %>
@@ -394,6 +404,7 @@ defmodule PlanningPokerWeb.CoreComponents do
       <li :for={item <- @item} class="list-row">
         <div class="list-col-grow">
           <div class="font-bold">{item.title}</div>
+
           <div>{render_slot(item)}</div>
         </div>
       </li>

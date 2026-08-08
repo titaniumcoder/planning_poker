@@ -33,7 +33,7 @@ defmodule PlanningPokerWeb.CreatePokerLive do
 
     case changeset.valid? do
       true -> handle_valid_poker_creation(changeset, socket)
-      false -> {:noreply, assign(socket, :form, to_form(changeset))}
+      false -> {:noreply, assign(socket, :form, to_form(Map.put(changeset, :action, :insert)))}
     end
   end
 

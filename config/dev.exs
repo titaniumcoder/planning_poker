@@ -94,4 +94,4 @@ config :planning_poker, :user_tracking_impl, PlanningPoker.UserTrackingContext
 config :sentry,
   dsn: nil,
   environment_name: :development,
-  client: RateCalculator.SentryReqClient
+  client: PlanningPoker.SentryReqClient

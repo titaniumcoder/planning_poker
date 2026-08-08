@@ -33,7 +33,7 @@ config :planning_poker, PlanningPoker.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,
-  version: "0.25.4",
+  version: "0.28.1",
   planning_poker: [
     args:
       ~w(js/app.js --bundle --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
@@ -43,7 +43,7 @@ config :esbuild,
 
 # Configure tailwind (the version is required)
 config :tailwind,
-  version: "4.1.7",
+  version: "4.3.3",
   planning_poker: [
     args: ~w(
       --input=assets/css/app.css
@@ -59,6 +59,11 @@ config :logger, :default_formatter,
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
+
+# This project keeps all assets in the assets/ directory and does not use
+# LiveView colocated assets, so disable the node_modules symlink warning
+# (which fails on Windows without elevated permissions).
+config :phoenix_live_view, :colocated_assets, disable_symlink_warning: true
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

@@ -71,7 +71,7 @@ defmodule PlanningPoker.UserTrackingMock do
       poker ->
         if username in (poker.usernames || []) do
           # Track online users in ETS table
-          :ets.insert(@online_users_table, {{poker_id, username}, true})
+          safe_insert(@online_users_table, {poker_id, username}, true)
           {:ok, %{username: username, online: true}}
         else
           {:error, :user_not_found}
@@ -81,8 +81,9 @@ defmodule PlanningPoker.UserTrackingMock do
 
   @impl PlanningPoker.UserTrackingBehaviour
   def mark_user_offline(poker_id, username, _pid) do
-    # Track online users in ETS table
-    :ets.insert(@online_users_table, {{poker_id, username}, false})
+    # Track online users in ETS table. The table may already be gone when
+    # the LiveView terminates (its owner process died), so guard the access.
+    safe_insert(@online_users_table, {poker_id, username}, false)
     {:ok, %{username: username, online: false}}
   end
 
@@ -90,13 +91,13 @@ defmodule PlanningPoker.UserTrackingMock do
   def toggle_mute_user(poker_id, username) do
     # Get current mute status
     current_muted =
-      case :ets.lookup(@muted_users_table, {poker_id, username}) do
+      case safe_lookup(@muted_users_table, {poker_id, username}) do
         [{{^poker_id, ^username}, muted}] -> muted
         [] -> false
       end
 
     new_muted = !current_muted
-    :ets.insert(@muted_users_table, {{poker_id, username}, new_muted})
+    safe_insert(@muted_users_table, {poker_id, username}, new_muted)
 
     {:ok, %{username: username, muted: new_muted}}
   end
@@ -127,14 +128,14 @@ defmodule PlanningPoker.UserTrackingMock do
   end
 
   defp get_online_status(poker_id, username) do
-    case :ets.lookup(@online_users_table, {poker_id, username}) do
+    case safe_lookup(@online_users_table, {poker_id, username}) do
       [{{^poker_id, ^username}, online_status}] -> online_status
       [] -> false
     end
   end
 
   defp get_muted_status(poker_id, username) do
-    case :ets.lookup(@muted_users_table, {poker_id, username}) do
+    case safe_lookup(@muted_users_table, {poker_id, username}) do
       [{{^poker_id, ^username}, muted_status}] -> muted_status
       [] -> false
     end
@@ -157,5 +158,25 @@ defmodule PlanningPoker.UserTrackingMock do
   @impl PlanningPoker.UserTrackingBehaviour
   def username_available?(_poker_id, _username) do
     true
+  end
+
+  # ETS tables created in tests are owned by the process that created them
+  # and disappear when that process exits. All access must therefore be
+  # guarded so that late callbacks (e.g. LiveView terminate) never crash.
+
+  defp safe_insert(table, key, value) do
+    if :ets.whereis(table) != :undefined do
+      :ets.insert(table, {key, value})
+    end
+
+    :ok
+  end
+
+  defp safe_lookup(table, key) do
+    if :ets.whereis(table) != :undefined do
+      :ets.lookup(table, key)
+    else
+      []
+    end
   end
 end

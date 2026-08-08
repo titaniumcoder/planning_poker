@@ -82,7 +82,7 @@ defmodule PlanningPoker.Voting.VotingServer do
   def handle_call({:start_voting_session, participants}, _from, state) do
     case state.status do
       :idle ->
-        if length(participants) > 0 do
+        if participants != [] do
           start_time = System.system_time(:millisecond)
           timer_ref = Process.send_after(self(), :voting_timeout, @voting_timeout)
 
