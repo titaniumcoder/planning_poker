@@ -1,19 +1,13 @@
-# fly.toml app configuration file generated for planning-poker-sse on 2025-09-08T21:52:14+03:00
-#
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
-
 app = 'planning-poker-sse'
 primary_region = 'fra'
 kill_signal = 'SIGTERM'
+kill_timeout = '15s'
 
 [build]
 
-[deploy]
-  release_command = '/app/bin/migrate'
-
 [env]
-  PHX_HOST = 'planning-poker-sse.fly.dev'
+  APP_ENV = 'production'
+  APP_ORIGIN = 'https://planning-poker-sse.fly.dev'
   PORT = '8080'
 
 [http_service]
@@ -27,7 +21,14 @@ kill_signal = 'SIGTERM'
   [http_service.concurrency]
     type = 'connections'
     hard_limit = 1000
-    soft_limit = 1000
+    soft_limit = 800
+
+  [[http_service.checks]]
+    grace_period = '5s'
+    interval = '15s'
+    method = 'GET'
+    path = '/readyz'
+    timeout = '3s'
 
 [[vm]]
   memory = '512mb'
