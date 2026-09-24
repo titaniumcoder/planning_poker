@@ -15,7 +15,7 @@ interface Poker {
   }>;
 }
 
-test.describe.configure({ mode: 'serial', timeout: 180_000 });
+test.describe.configure({ mode: 'serial', timeout: Math.max(180_000, roomCount * 2_000) });
 
 test(`runs ${roomCount} concurrent multi-user planning sessions`, async () => {
   const startedAt = Date.now();
