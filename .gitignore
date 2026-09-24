@@ -1,37 +1,35 @@
-# The directory Mix will write compiled artifacts to.
-/_build/
+# Elixir
+/elixir/_build/
+/elixir/cover/
+/elixir/deps/
+/elixir/doc/
+/elixir/.fetch
+/elixir/tmp/
+/elixir/erl_crash.dump
+/elixir/*.ez
+/elixir/planning_poker-*.tar
+/elixir/priv/static/assets/
+/elixir/priv/static/cache_manifest.json
+/elixir/assets/node_modules/
 
-# If you run "mix test --cover", coverage assets end up here.
-/cover/
+# Go
+/go/tmp/
+/go/coverage/
+/go/planning-poker
+/go/planning-poker.exe
 
-# The directory Mix downloads your dependencies sources to.
-/deps/
+# Svelte
+/go/web/node_modules/
+/go/web/dist/
+/go/web/playwright-report/
+/go/web/test-results/
+/go/internal/web/dist/*
+!/go/internal/web/dist/.placeholder
+npm-debug.log*
 
-# Where 3rd-party dependencies like ExDoc output generated docs.
-/doc/
-
-# Ignore .fetch files in case you like to edit your project deps locally.
-/.fetch
-
-# If the VM crashes, it generates a dump, let's ignore it too.
-erl_crash.dump
-
-# Also ignore archive artifacts (built via "mix archive.build").
-*.ez
-
-# Temporary files, for example, from tests.
-/tmp/
-
-# Ignore package tarball (built via "mix hex.build").
-planning_poker-*.tar
-
-# Ignore assets that are produced by build tools.
-/priv/static/assets/
-
-# Ignore digested assets cache.
-/priv/static/cache_manifest.json
-
-# In case you use Node.js/npm, you want to ignore these.
-npm-debug.log
-/assets/node_modules/
-
+# Editors and operating systems
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
