@@ -42,18 +42,15 @@ describe('App', () => {
     expect(realtimeMock.stop).toHaveBeenCalledOnce();
   });
 
-  it('announces realtime status and renders the setup surface', () => {
+  it('announces realtime status and renders the creation flow', () => {
     render(App);
 
-    expect(
-      screen.getByRole('heading', { name: 'Planning poker, rebuilt for speed.' }),
-    ).toBeVisible();
+    expect(screen.getByRole('heading', { name: 'Make the next estimate together.' })).toBeVisible();
     expect(screen.getByRole('status')).toHaveTextContent('Connected');
     expect(screen.getByRole('navigation', { name: 'Primary navigation' })).toBeVisible();
     expect(screen.getByRole('link', { name: 'Planning Poker home' })).toHaveAttribute('href', '/');
-    expect(screen.getByText('Realtime first')).toBeVisible();
-    expect(screen.getByText('One artifact')).toBeVisible();
-    expect(screen.getByText('Built to iterate')).toBeVisible();
+    expect(screen.getByRole('form', { name: 'Create session' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Create planning poker' })).toBeVisible();
   });
 
   it('maps offline state to an accessible live status', () => {

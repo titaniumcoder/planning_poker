@@ -11,6 +11,7 @@ import (
 
 	"github.com/titaniumcoder/planning-poker/go/internal/config"
 	"github.com/titaniumcoder/planning-poker/go/internal/httpserver"
+	"github.com/titaniumcoder/planning-poker/go/internal/poker"
 	"github.com/titaniumcoder/planning-poker/go/internal/realtime"
 	webassets "github.com/titaniumcoder/planning-poker/go/internal/web"
 )
@@ -40,7 +41,7 @@ func run() int {
 		MaxConnections:    cfg.MaxConnections,
 		MessagesPerMinute: cfg.MessagesPerMinute,
 	}, logger)
-	server := httpserver.New(cfg, logger, assets, realtimeHandler)
+	server := httpserver.New(cfg, logger, assets, realtimeHandler, poker.NewStore())
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()

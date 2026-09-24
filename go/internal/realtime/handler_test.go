@@ -80,7 +80,7 @@ func TestHandlerRejectsUnknownMessageWithCorrelatedError(t *testing.T) {
 	}
 	defer func() { _ = conn.CloseNow() }()
 	_ = readEnvelope(t, ctx, conn)
-	message, _ := NewEnvelope("room.join", "correlation-1", map[string]string{"name": "alice"})
+	message, _ := NewEnvelope("connection.resumed", "correlation-1", map[string]string{"name": "alice"})
 	writeEnvelope(t, ctx, conn, message)
 	response := readEnvelope(t, ctx, conn)
 	if response.Type != "error" || response.ID != "correlation-1" {

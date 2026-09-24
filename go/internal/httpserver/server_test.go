@@ -10,6 +10,7 @@ import (
 	"testing/fstest"
 
 	"github.com/titaniumcoder/planning-poker/go/internal/config"
+	"github.com/titaniumcoder/planning-poker/go/internal/poker"
 )
 
 func TestHealthAndSecurityHeaders(t *testing.T) {
@@ -72,7 +73,7 @@ func TestSPAAssetsHaveContentTypesAndImmutableCaching(t *testing.T) {
 
 func TestSPAUnavailableWhenIndexIsMissing(t *testing.T) {
 	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
-	server := New(config.Config{Port: 8080}, logger, fstest.MapFS{}, http.NotFoundHandler())
+	server := New(config.Config{Port: 8080}, logger, fstest.MapFS{}, http.NotFoundHandler(), poker.NewStore())
 	response := httptest.NewRecorder()
 	server.HTTP.Handler.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/", nil))
 	if response.Code != http.StatusServiceUnavailable {
@@ -97,5 +98,5 @@ func testServer(t *testing.T) *Server {
 	}
 	var filesystem fs.FS = assets
 	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
-	return New(config.Config{Port: 8080}, logger, filesystem, http.NotFoundHandler())
+	return New(config.Config{Port: 8080}, logger, filesystem, http.NotFoundHandler(), poker.NewStore())
 }

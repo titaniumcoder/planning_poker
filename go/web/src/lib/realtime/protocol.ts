@@ -48,6 +48,9 @@ export function parseEnvelope(value: string): Envelope {
   if (parsed.id !== undefined && typeof parsed.id !== 'string') {
     throw new Error('Invalid realtime message id');
   }
+  if (parsed.payload !== undefined && !isRecord(parsed.payload)) {
+    throw new Error('Invalid realtime message payload');
+  }
   return parsed as unknown as Envelope;
 }
 
@@ -55,6 +58,7 @@ export function isHelloPayload(payload: unknown): payload is HelloPayload {
   return (
     isRecord(payload) &&
     typeof payload.connectionId === 'string' &&
+    payload.connectionId.length > 0 &&
     payload.protocolVersion === protocolVersion &&
     typeof payload.heartbeatMillis === 'number' &&
     payload.heartbeatMillis > 0 &&

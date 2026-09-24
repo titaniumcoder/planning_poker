@@ -12,7 +12,7 @@ Planning Poker is being rebuilt as a Go backend with a Svelte frontend. The orig
 | `Dockerfile` | The single production build, producing one Go application binary |
 | `fly.toml` | Fly.io runtime and health configuration |
 
-The Go service embeds the production Svelte assets. Production serves the page, API, and WebSocket from one origin and one process.
+The Go service embeds the production Svelte assets. Production serves the page, API, and WebSocket from one origin and one process. Sessions are intentionally in-memory: restarting the service clears active rooms and browser sessions, matching the scaffold's no-database constraint.
 
 ## Prerequisites
 
@@ -96,9 +96,11 @@ Then verify <http://localhost:8080/healthz>, <http://localhost:8080/readyz>, and
 
 The Dockerfile keeps the toolchains independent: Node builds static files, the Go stage embeds that completed output, and the minimal runtime receives only the non-root Go application binary.
 
-## Realtime foundation
+## Planning-poker application
 
-`/api/v1/ws` provides a versioned JSON protocol with connection hello, heartbeat, explicit errors, and resume hooks. Resume currently returns `connection.resume_unavailable` because domain/session state is intentionally not part of this setup phase. Both server and browser enforce bounded messages, lifecycle cleanup, and safe reconnect behavior.
+The Svelte application lets a moderator create a room, participants join it, and teams add estimation items, vote with Fibonacci or T-shirt cards, review vote history, mute themselves, terminate/reopen a room, and leave it. Browser sessions use opaque, HttpOnly per-room cookies; they are never placed in browser storage.
+
+`/api/v1/pokers` exposes the same state transitions for the browser UI. `/api/v1/ws` provides a versioned JSON connection with heartbeats, bounded traffic, exact-origin checks, lifecycle cleanup, and reconnect handling. The UI refreshes room state while connected, so independently joined participants see state transitions without sharing client-side secrets.
 
 ## Deployment
 
