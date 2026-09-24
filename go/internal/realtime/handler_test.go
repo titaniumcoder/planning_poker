@@ -67,6 +67,48 @@ func TestHandlerHelloHeartbeatAndResume(t *testing.T) {
 	writeEnvelope(t, ctx, conn, pong)
 }
 
+func TestHandlerRejectsUnknownMessageWithCorrelatedError(t *testing.T) {
+	server := httptest.NewServer(testHandler())
+	defer server.Close()
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	conn, _, err := websocket.Dial(ctx, "ws"+server.URL[4:], &websocket.DialOptions{
+		HTTPHeader: map[string][]string{"Origin": {"http://localhost:5173"}},
+	})
+	if err != nil {
+		t.Fatalf("Dial() error = %v", err)
+	}
+	defer func() { _ = conn.CloseNow() }()
+	_ = readEnvelope(t, ctx, conn)
+	message, _ := NewEnvelope("connection.resumed", "correlation-1", map[string]string{"name": "alice"})
+	writeEnvelope(t, ctx, conn, message)
+	response := readEnvelope(t, ctx, conn)
+	if response.Type != "error" || response.ID != "correlation-1" {
+		t.Fatalf("error response = %#v", response)
+	}
+}
+
+func TestHandlerRejectsMalformedHeartbeatPayload(t *testing.T) {
+	server := httptest.NewServer(testHandler())
+	defer server.Close()
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	conn, _, err := websocket.Dial(ctx, "ws"+server.URL[4:], &websocket.DialOptions{
+		HTTPHeader: map[string][]string{"Origin": {"http://localhost:5173"}},
+	})
+	if err != nil {
+		t.Fatalf("Dial() error = %v", err)
+	}
+	defer func() { _ = conn.CloseNow() }()
+	_ = readEnvelope(t, ctx, conn)
+	message := Envelope{Version: ProtocolVersion, Type: "heartbeat.pong", ID: "bad", Payload: []byte(`{"sequence":"not-a-number"}`)}
+	writeEnvelope(t, ctx, conn, message)
+	response := readEnvelope(t, ctx, conn)
+	if response.Type != "error" || response.ID != "bad" {
+		t.Fatalf("error response = %#v", response)
+	}
+}
+
 func testHandler() *Handler {
 	return NewHandler(Config{
 		AllowedOrigins:    map[string]struct{}{"http://localhost:5173": {}},
