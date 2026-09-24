@@ -96,6 +96,49 @@ Then verify <http://localhost:8080/healthz>, <http://localhost:8080/readyz>, and
 
 The Dockerfile keeps the toolchains independent: Node builds static files, the Go stage embeds that completed output, and the minimal runtime receives only the non-root Go application binary.
 
+## Multi-user load testing
+
+The Go load runner exercises the deployed HTTP API with isolated cookie jars, connection reuse, deterministic users, voting rounds, and realistic action delays. Each stage starts the requested number of rooms concurrently and verifies every final vote, round, and consensus decision.
+
+Run the default 50-room deployment gate against a local server:
+
+```sh
+go -C go run ./cmd/loadtest -target http://127.0.0.1:8080
+```
+
+Run the same suite against a temporary deployment:
+
+```sh
+go -C go run ./cmd/loadtest -target https://planning-poker-staging.fly.dev
+```
+
+Run an explicit capacity sweep:
+
+```sh
+go -C go run ./cmd/loadtest \
+  -target https://planning-poker-staging.fly.dev \
+  -stages 50,250,500
+```
+
+Useful options:
+
+```sh
+go -C go run ./cmd/loadtest \
+  -target https://planning-poker-staging.fly.dev \
+  -stages 50,100,250,500 \
+  -users-min 3 -users-max 8 \
+  -rounds-min 3 -rounds-max 12 \
+  -delay-min 5ms -delay-max 50ms \
+  -room-ramp 250ms \
+  -websockets=true \
+  -max-error-rate 0.001 -max-p95 500ms \
+  -stage-timeout 20m
+```
+
+The command writes a JSON report with room, user, round, HTTP/WebSocket request, error-rate, and p50/p95/p99 latency metrics. By default every user holds a heartbeat-aware WebSocket like the real browser; use `-websockets=false` to isolate HTTP API capacity. It exits nonzero if a stage is incomplete, exceeds a threshold, or times out, which makes it suitable for a staging deployment gate. The default 250 ms room ramp avoids turning every stage into a single synchronized connection spike; use `-room-ramp 0` when intentionally testing the listener backlog. Do not run high-concurrency stages against production without an agreed maintenance window.
+
+The server defaults to 500 concurrent WebSockets. A capacity sweep with 3-8 users per room is expected to reach that limit before 250 rooms unless `WS_MAX_CONNECTIONS` and the deployment platform's connection limit are raised together.
+
 ## Planning-poker application
 
 The Svelte application lets a moderator create a room, participants join it, and teams add estimation items, vote with Fibonacci or T-shirt cards, review vote history, mute themselves, terminate/reopen a room, and leave it. Browser sessions use opaque, HttpOnly per-room cookies; they are never placed in browser storage.
