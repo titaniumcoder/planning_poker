@@ -15,6 +15,15 @@ describe('realtime protocol', () => {
     (value) => expect(() => parseEnvelope(value)).toThrow(),
   );
 
+  it.each([
+    '{"v":1,"type":"heartbeat.ping","id":42}',
+    '{"v":1,"type":"heartbeat.ping","id":null}',
+    '{"v":1,"type":"heartbeat.ping","payload":[]}',
+    '{"v":1,"type":42}',
+  ])('rejects malformed envelope fields: %s', (value) => {
+    expect(() => parseEnvelope(value)).toThrow();
+  });
+
   it('validates typed payloads', () => {
     expect(
       isHelloPayload({
@@ -26,5 +35,38 @@ describe('realtime protocol', () => {
     ).toBe(true);
     expect(isHeartbeatPayload({ sequence: 3 })).toBe(true);
     expect(isHeartbeatPayload({ sequence: -1 })).toBe(false);
+  });
+
+  it.each([
+    undefined,
+    null,
+    {},
+    { connectionId: '', protocolVersion: 1, heartbeatMillis: 20_000, resumeSupported: true },
+    {
+      connectionId: 'connection',
+      protocolVersion: 2,
+      heartbeatMillis: 20_000,
+      resumeSupported: true,
+    },
+    { connectionId: 'connection', protocolVersion: 1, heartbeatMillis: 0, resumeSupported: true },
+    {
+      connectionId: 'connection',
+      protocolVersion: 1,
+      heartbeatMillis: 20_000,
+      resumeSupported: 'yes',
+    },
+  ])('rejects invalid hello payload %#', (payload) => {
+    expect(isHelloPayload(payload)).toBe(false);
+  });
+
+  it.each([
+    undefined,
+    null,
+    {},
+    { sequence: 1.5 },
+    { sequence: Number.MAX_SAFE_INTEGER + 1 },
+    { sequence: -1 },
+  ])('rejects invalid heartbeat payload %#', (payload) => {
+    expect(isHeartbeatPayload(payload)).toBe(false);
   });
 });
