@@ -14,17 +14,21 @@ import (
 	"time"
 
 	"github.com/titaniumcoder/planning-poker/go/internal/config"
+	"github.com/titaniumcoder/planning-poker/go/internal/poker"
 )
 
 type Server struct {
 	HTTP *http.Server
 }
 
-func New(cfg config.Config, logger *slog.Logger, assets fs.FS, realtime http.Handler) *Server {
+func New(cfg config.Config, logger *slog.Logger, assets fs.FS, realtime http.Handler, store *poker.Store) *Server {
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /healthz", text(http.StatusOK, "ok"))
-	mux.HandleFunc("GET /readyz", text(http.StatusOK, "ready"))
+	mux.Handle("/healthz", getOnly(text(http.StatusOK, "ok")))
+	mux.Handle("/readyz", getOnly(text(http.StatusOK, "ready")))
 	mux.Handle("/api/v1/ws", realtime)
+	api := newAPI(store, strings.HasPrefix(cfg.AppOrigin, "https://"))
+	mux.Handle("/api/v1/pokers", api)
+	mux.Handle("/api/v1/pokers/", api)
 	mux.HandleFunc("/api/", http.NotFound)
 	mux.Handle("/", spaHandler(assets))
 
@@ -45,6 +49,17 @@ func text(status int, body string) http.HandlerFunc {
 		w.WriteHeader(status)
 		_, _ = w.Write([]byte(body))
 	}
+}
+
+func getOnly(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			w.Header().Set("Allow", http.MethodGet)
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }
 
 func spaHandler(assets fs.FS) http.Handler {

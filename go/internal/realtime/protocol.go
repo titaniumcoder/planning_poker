@@ -8,6 +8,16 @@ import (
 
 const ProtocolVersion = 1
 
+var supportedTypes = map[string]struct{}{
+	"connection.hello":              {},
+	"connection.resume":             {},
+	"connection.resumed":            {},
+	"connection.resume_unavailable": {},
+	"heartbeat.ping":                {},
+	"heartbeat.pong":                {},
+	"error":                         {},
+}
+
 type Envelope struct {
 	Version int             `json:"v"`
 	Type    string          `json:"type"`
@@ -47,6 +57,9 @@ func Decode(data []byte) (Envelope, error) {
 	}
 	if envelope.Type == "" {
 		return Envelope{}, errors.New("message type is required")
+	}
+	if _, ok := supportedTypes[envelope.Type]; !ok {
+		return Envelope{}, fmt.Errorf("unsupported message type %q", envelope.Type)
 	}
 	return envelope, nil
 }
