@@ -7,7 +7,7 @@ test('loads the embedded application and connects in real time', async ({ page }
   await page.goto('/');
 
   await expect(
-    page.getByRole('heading', { name: 'Planning poker, rebuilt for speed.' }),
+    page.getByRole('heading', { name: 'Make the next estimate together.' }),
   ).toBeVisible();
   await expect(page.getByTestId('connection-status')).toHaveText('Connected');
   expect(browserErrors).toEqual([]);
@@ -16,19 +16,18 @@ test('loads the embedded application and connects in real time', async ({ page }
 test('exposes an accessible foundation surface', async ({ page }) => {
   await page.goto('/');
 
-  await expect(page).toHaveTitle('Planning Poker · Go + Svelte');
+  await expect(page).toHaveTitle('Planning Poker');
   await expect(page.getByRole('navigation', { name: 'Primary navigation' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Planning Poker home' })).toHaveAttribute(
     'href',
     '/',
   );
   await expect(
-    page.getByRole('heading', { name: 'Planning poker, rebuilt for speed.' }),
+    page.getByRole('heading', { name: 'Make the next estimate together.' }),
   ).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Realtime first' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'One artifact' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Built to iterate' })).toBeVisible();
-  await expect(page.getByRole('contentinfo')).toContainText('Foundation phase');
+  await expect(page.getByRole('form', { name: 'Create session' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Create planning poker' })).toBeVisible();
+  await expect(page.locator('footer')).toContainText('Estimate together');
 });
 
 test('keeps the connection status live and free of browser errors', async ({ page }) => {
